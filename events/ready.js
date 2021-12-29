@@ -8,6 +8,9 @@ module.exports = async (client) => {
 
 	client.user.setActivity(`${botName} v${version} - /help`);
 
+	const Guilds = client.guilds.cache.map(guild => guild.id);
+	console.log(Guilds);
+
 	let guild, role, newDelay, timeoutEndTime;
 
 
