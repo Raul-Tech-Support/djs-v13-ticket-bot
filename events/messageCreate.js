@@ -1,5 +1,5 @@
 const saveTimeout = require('../models/SaveTimeout.js');
-const { realiveCooldown, realiveRoleID } = require('../config.json');
+const { realiveCooldown, realiveRoleID, botName } = require('../config.json');
 
 module.exports = async (client, message) => {
 
@@ -13,10 +13,10 @@ module.exports = async (client, message) => {
 				role = message.guild.roles.cache.find(roleID => roleID.id === realiveRoleID);
 			}
 			catch {
-				console.log('Unable to fetch role! Is the bot in the guild or has the role been deleted?');
+				console.error(`[${botName}] Unable to fetch role! Is the bot in the guild or has the role been deleted?`);
 			}
 
-			role.setMentionable(false, 'Realive cooldown').catch(e => {console.log(`Could not edit role: ${e}`);});
+			role.setMentionable(false, 'Realive cooldown').catch(e => {console.error(`[${botName}] Could not edit role: ${e}`);});
 
 			const date = Date.now();
 			const timeoutEndTime = date + realiveCooldown;
@@ -27,7 +27,7 @@ module.exports = async (client, message) => {
 				timeoutEnd: timeoutEndTime,
 			});
 
-			await newTimeout.save().catch(e => console.log(`Failed to save timeout: ${e}`));
+			await newTimeout.save().catch(e => console.error(`[${botName}] Failed to save timeout: ${e}`));
 
 			setTimeout(function() {
 				role.setMentionable(true, 'Realive cooldown ended').catch(e => {console.log(`Could not edit role: ${e}`);});

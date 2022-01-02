@@ -3,6 +3,7 @@ const { Client, Collection } = require('discord.js');
 const { Routes } = require('discord-api-types/v9');
 const { readdirSync, readdir } = require('fs');
 const { REST } = require('@discordjs/rest');
+const { botName, debug } = require('./config.json');
 require('dotenv').config();
 
 const client = new Client({
@@ -13,6 +14,7 @@ const client = new Client({
 });
 
 client.commands = new Collection();
+client.buttons = new Collection();
 client.colours = options;
 client.token = process.env.TOKEN;
 const cmds = [];
@@ -25,11 +27,20 @@ for (const file of commandFiles) {
 	client.commands.set(command.data.name, command);
 }
 
+const buttonFiles = readdirSync('./buttons/').filter(f => f.endsWith('.js'));
+
+for (const file of buttonFiles) {
+	const button = require(`./buttons/${file}`);
+
+	client.buttons.set(button.data.name, button);
+}
+
+
 const rest = new REST({ version: '9' }).setToken(process.env.TOKEN);
 
 (async () => {
 	try {
-		console.log('Setting slash commands..');
+		if (debug) console.log(`[${botName}] Registering slash commands...`);
 
 		for (let i = 0; i < client.commands.toJSON().length; i++) {
 			cmds.push(client.commands.toJSON()[i].data.toJSON());
@@ -42,10 +53,10 @@ const rest = new REST({ version: '9' }).setToken(process.env.TOKEN);
 			},
 		);
 
-		console.log('Success!');
+		if (debug) console.log(`[${botName}] Success! Slash commands have been successfully registered.`);
 	}
 	catch (err) {
-		console.error(err);
+		console.error(`[${botName}] Error! Could not register slash commands: ${err}`);
 	}
 })();
 

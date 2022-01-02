@@ -22,13 +22,13 @@ module.exports = {
 			);
 
 		const generalHelpEmbed = new MessageEmbed()
-			.setAuthor('Help')
+			.setTitle('Help')
 			.setDescription('Use `/help <command>` to get info about a specific command!')
 			.addField('Commands (A-Z)', `${commands.map(command => command.data.name).join(', ')}`)
 			.setColor(colour)
-			.setFooter(`${botName} | Version ${version} | Developed by ${author}`);
+			.setFooter({ text:`${botName} | Version ${version} | Developed by ${author}` });
 
-		if (!cmd) return interaction.reply({ embeds: [generalHelpEmbed], ephemeral: true, components: [supportButton] }); //Sends general help message if no command is selected.
+		if (!cmd) return await interaction.reply({ embeds: [generalHelpEmbed], ephemeral: true, components: [supportButton] }); //Sends general help message if no command is selected.
 
 		const name = cmd.toLowerCase();
 		const command = commands.get(name);
@@ -38,7 +38,7 @@ module.exports = {
 		const commandSpecificHelpEmbed = new MessageEmbed()
 			.setTitle(`Command: /${command.data.name}`)
 			.setDescription(`Description: ${command.data.description}`)
-			.setFooter(`${botName} | Version ${version} | Developed by ${author}`);
+			.setFooter({ text:`${botName} | Version ${version} | Developed by ${author}` });
 
 		await interaction.reply({ embeds: [commandSpecificHelpEmbed], ephemeral: true, components: [supportButton] }); //Sends command specific help message if valid command is entered.
 	},
