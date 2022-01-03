@@ -6,6 +6,7 @@ const GuildSettingsSchema = new mongoose.Schema({
 	guildBanAnnounceMessage: { type: String },
 	guildAppealLink: { type: String },
 	guildModLogChannel: { type: String },
+	guildAdminLogChannel: { type: String },
 });
 
 module.exports = mongoose.model('GuildSettings', GuildSettingsSchema);

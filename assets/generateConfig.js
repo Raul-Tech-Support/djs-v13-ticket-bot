@@ -22,6 +22,7 @@ module.exports = async (guild) => {
 				guildBanAnnounceMessage: '%target% was banned by %moderator%',
 				guildAppealLink: 'No Appeal Link Set',
 				guildModLogChannel: '',
+				guildAdminLogChannel: '',
 			});
 
 			await guildSetup.save();

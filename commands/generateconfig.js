@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { MessageEmbed } = require('discord.js');
+const { MessageEmbed, MessageButton, MessageActionRow } = require('discord.js');
 const generateConfig = require('../assets/generateConfig.js');
-const { botName, version, author } = require('../config.json');
+const { botName, version, author, supportURL } = require('../config.json');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -10,6 +10,15 @@ module.exports = {
 	async execute(interaction) {
 
 		const permission = 'ADMINISTRATOR';
+
+		//Support button
+		const supportButton = new MessageActionRow()
+			.addComponents(
+				new MessageButton()
+					.setLabel('Join our support server!')
+					.setStyle('LINK')
+					.setURL(supportURL),
+			);
 
 		const insufficientPermsEmbed = new MessageEmbed()
 			.setColor('RED')
@@ -20,7 +29,7 @@ module.exports = {
 		//Ensure interaction member has permission to execute command.
 		if (!interaction.member.permissions.has(permission)) return await interaction.reply({ embeds: [insufficientPermsEmbed], ephemeral: true });
 
-		if (!interaction.inGuild) return await interaction.reply({ content: 'This command cannot be executed inside DM\'s!' });
+		if (!interaction.inGuild) return await interaction.reply({ content: 'This command cannot be executed inside DM\'s!', components: [supportButton] });
 
 		await interaction.deferReply({ ephemeral: true });
 

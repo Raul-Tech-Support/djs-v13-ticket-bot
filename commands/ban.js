@@ -25,18 +25,6 @@ module.exports = {
 
 		const permission = 'BAN_MEMBERS';
 
-		const insufficientPermsEmbed = new MessageEmbed()
-			.setColor('RED')
-			.setTitle('Insufficient Permissions!')
-			.setDescription(`You do not have permission to execute this command!\nIt requires the \`${permission}\` permission.`)
-			.setFooter({ text:`${botName} | Version ${version} | Developed by ${author}` });
-
-		//Ensure interaction member has permission to ban members.
-		if (!interaction.member.permissions.has(permission)) return await interaction.reply({ embeds: [insufficientPermsEmbed], ephemeral: true });
-
-
-		if (!interaction.inGuild) return await interaction.reply({ content: 'This command cannot be executed inside DM\'s!' });
-
 		const colour = Math.floor(Math.random() * 16777215).toString(16);
 		const target = interaction.options.getMember('target');
 		const reason = interaction.options.getString('reason');
@@ -80,6 +68,16 @@ module.exports = {
 			.setTitle('Invaild Channel!')
 			.setDescription('The channel you have defined could not be found in this guild! Please ensure you use a channel in the current guild.')
 			.setFooter({ text:`${botName} | Version ${version} | Developed by ${author}` });
+		const insufficientPermsEmbed = new MessageEmbed()
+			.setColor('RED')
+			.setTitle('Insufficient Permissions!')
+			.setDescription(`You do not have permission to execute this command!\nIt requires the \`${permission}\` permission.`)
+			.setFooter({ text:`${botName} | Version ${version} | Developed by ${author}` });
+
+		//Ensure interaction member has permission to ban members.
+		if (!interaction.member.permissions.has(permission)) return await interaction.reply({ embeds: [insufficientPermsEmbed], ephemeral: true });
+
+		if (!interaction.inGuild) return await interaction.reply({ content: 'This command cannot be executed inside DM\'s!', components: [supportButton] });
 
 		//If bot's role is same as or below target
 		if (!target.moderatable) return await interaction.reply({ embeds: [botLacksPermsEmbed], ephemeral: true, components: [supportButton] });
@@ -166,7 +164,7 @@ module.exports = {
 			return await interaction.reply({ content: bannedContent, embeds: [bannedEmbed], ephemeral: true }); //If successfully banned target
 		}
 		catch (e) {
-			return await interaction.reply({ content: `Could not ban user: ${e}`, embeds: [genericError], ephemeral: true, components: [supportButton] }); //Sends error message if fails to time out target
+			return await interaction.reply({ content: `Could not ban user: ${e}`, embeds: [genericError], ephemeral: true, components: [supportButton] }); //Sends error message if fails to ban target
 		}
 
 	},
