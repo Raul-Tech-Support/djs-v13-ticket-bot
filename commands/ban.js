@@ -149,11 +149,11 @@ module.exports = {
 			break;
 
 		case 'error':
-			console.log(`[${botName}] An error has occured in modLogCreate result switch statement.`);
+			console.error(`[${botName}] An error has occured in modLogCreate result switch statement.`);
 			return await interaction.reply({ content: 'An unknown error has occured' });
 
 		default:
-			console.log(`[${botName}] An error has occured in modLogCreate result switch statement.`);
+			console.error(`[${botName}] An error has occured in modLogCreate result switch statement.`);
 			return await interaction.reply({ content: 'An unknown error has occured' });
 		}
 

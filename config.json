@@ -8,5 +8,6 @@
 	"internalLogChannel": "903497554535260192",
 	"realiveCooldown": 3600000,
 	"realiveGuildID": "756355982245888021",
-	"realiveRoleID": "812195138699919373"
+	"realiveRoleID": "812195138699919373",
+	"inviteBotLink": "https://discord.com/api/oauth2/authorize?client_id=874066976597770310&permissions=8&scope=bot%20applications.commands"
 }
