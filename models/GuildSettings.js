@@ -7,6 +7,7 @@ const GuildSettingsSchema = new mongoose.Schema({
 	guildAppealLink: { type: String },
 	guildModLogChannel: { type: String },
 	guildAdminLogChannel: { type: String },
+	guildHandbookVerificationWord: { type: String },
 });
 
 module.exports = mongoose.model('GuildSettings', GuildSettingsSchema);

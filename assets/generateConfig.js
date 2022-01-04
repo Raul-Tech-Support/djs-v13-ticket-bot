@@ -23,6 +23,7 @@ module.exports = async (guild) => {
 				guildAppealLink: 'No Appeal Link Set',
 				guildModLogChannel: '',
 				guildAdminLogChannel: '',
+				guildHandbookVerificationWord: 'word',
 			});
 
 			await guildSetup.save();
