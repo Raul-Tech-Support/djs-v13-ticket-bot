@@ -8,6 +8,10 @@ const GuildSettingsSchema = new mongoose.Schema({
 	guildModLogChannel: { type: String },
 	guildAdminLogChannel: { type: String },
 	guildHandbookVerificationWord: { type: String },
+	guildHandbookTrialRoleName: { type: String },
+	guildHandbookAllStaffRoleName: { type: String },
+	guildHandbookAwardRoleName: { type: String },
+	guildHandbookSuspendedRoleName: { typr: String },
 });
 
 module.exports = mongoose.model('GuildSettings', GuildSettingsSchema);

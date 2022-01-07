@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { MessageEmbed } = require('discord.js');
-const { botName, version, author } = require('../config.json');
+const { botName, version, author, debug } = require('../config.json');
 const GuildSettings = require('../models/GuildSettings.js');
 
 module.exports = {
@@ -51,7 +51,7 @@ module.exports = {
 			.setFooter({ text:`${botName} | Version ${version} | Developed by ${author}` });
 
 		//If the user is currently suspended send suspended embed to guildAdminLogChannel and notify user
-		if (interaction.member.roles.cache.some(r => r.name === 'Suspended')) {
+		if (interaction.member.roles.cache.some(r => r.name === guildSettings.guildHandbookSuspendedRoleName)) {
 			try {
 				c.send({ embeds: [suspendedEmbed] });
 				return await interaction.reply({ content: 'You cannot currently do this! Please open a staff suport ticket!', ephemeral: true });
@@ -61,41 +61,46 @@ module.exports = {
 			}
 		}
 		//If user does not yet have Discord Staff...
-		else if (!interaction.member.roles.cache.some(r => r.name === 'Discord Staff')) {
+		else if (!interaction.member.roles.cache.some(r => r.name === guildSettings.guildHandbookAllStaffRoleName)) {
 			//...but does have Trial Staff...
-			if (interaction.member.roles.cache.some(r => r.name === 'Trial Staff')) {
+			if (interaction.member.roles.cache.some(r => r.name === guildSettings.guildHandbookTrialRoleName)) {
 				//...& enters correct word (stored in guildSettings)
 				if (word.toLowerCase() === guildSettings.guildHandbookVerificationWord) {
 					try {
 						let errorMessage = ' error(s) occured while executing this command: ', errorCount = 0;
-						const discordStaffRole = await interaction.guild.roles.cache.find(r => r.name === 'Discord Staff');
-						const helperRole = await interaction.guild.roles.cache.find(r => r.name === 'Helper');
-						console.log('2');
+						const awardRole1 = await interaction.guild.roles.cache.find(r => r.name === guildSettings.guildHandbookAllStaffRoleName);
+						const awardRole2 = await interaction.guild.roles.cache.find(r => r.name === guildSettings.guildHandbookAwardRoleName);
 						const member = interaction.member;
-						if (discordStaffRole) {
-							member.roles.add(discordStaffRole);
+						if (awardRole1 && awardRole1.editable) {
+							member.roles.add(awardRole1);
+							if (debug) console.error(`[${botName}] Awarded ${guildSettings.guildHandbookAllStaffRoleName} in ${interaction.guild.name}`);
 						}
 						else {
 							errorCount++;
-							errorMessage = errorMessage + 'The role "Discord Staff" could not be found. ';
+							errorMessage = errorMessage + `The role ${guildSettings.guildHandbookAllStaffRoleName} could not be found or is above the bots role, please contact your Administration Team. `;
+							if (debug) console.error(`[${botName}] Failed to award ${guildSettings.guildHandbookAllStaffRoleName} in ${interaction.guild.name}`);
 						}
-						if (helperRole) {
-							member.roles.add(helperRole);
+						if (awardRole2 && awardRole2.editable) {
+							member.roles.add(awardRole2);
+							if (debug) console.error(`[${botName}] Awarded ${guildSettings.guildHandbookAwardRoleName} in ${interaction.guild.name}`);
 						}
 						else {
 							errorCount++;
-							errorMessage = errorMessage + 'The role "Helper" could not be found.';
+							errorMessage = errorMessage + `The role ${guildSettings.guildHandbookAwardRoleName} could not be found or is above the bots role, please contact your Administration Team.`;
+							if (debug) console.error(`[${botName}] Failed to award ${guildSettings.guildHandbookAwardRoleName} in ${interaction.guild.name}`);
 						}
-						c.send({ embeds: [helperGrantedEmbed] });
 
 						if (errorCount !== 0) {
+							c.send({ content: errorCount + errorMessage, embeds: [helperGrantedEmbed] });
 							return await interaction.reply({ content: 'Thank you for reading the handbook, welcome to the staff team!\n\n' + errorCount + errorMessage, ephemeral: true });
 						}
 						else {
+							c.send({ embeds: [helperGrantedEmbed] });
 							return await interaction.reply({ content: 'Thank you for reading the handbook, welcome to the staff team!', ephemeral: true });
 						}
 					}
 					catch (e) {
+						console.error(`[${botName}] Could not add roles/send verification message: ${e}`);
 						return await interaction.reply({ content: `Could not add roles/send verification message: ${e}`, ephemeral: true });
 					}
 				}
@@ -103,15 +108,18 @@ module.exports = {
 				else if (word.toLowerCase() === 'help') {
 					try {
 						c.send({ embeds: [helpNeededEmbed] });
+						if (debug) console.error(`[${botName}] ${interaction.user.tag} requested help in ${guildSettings.guildHandbookAwardRoleName}`);
 						return await interaction.reply({ content: 'Your request for help has been recieved!', ephemeral: true });
 					}
 					catch (e) {
+						console.error(`[${botName}] Could not add help request message: ${e}`);
 						return await interaction.reply({ content: `Could not send help request message: ${e}`, ephemeral: true });
 					}
 				}
 				else {
 					try {
 						c.send({ embeds: [failedVerificationEmbed] });
+						if (debug) console.error(`[${botName}] ${interaction.user.tag} failed verification in ${interaction.guild.name} with word ${word}`);
 						return await interaction.reply({ content: `${word} is not the correct secret word!`, ephemeral: true });
 					}
 					catch (e) {
@@ -122,10 +130,11 @@ module.exports = {
 			else {
 				try {
 					c.send({ embeds: [unauthorizedVerifyEmbed] });
+					if (debug) console.error(`[${botName}] ${interaction.user.tag} tried to verify in ${interaction.guild.name} with word ${word} however they do not have the required roles.`);
 					return await interaction.reply({ content: 'You cannot run this command as you are not a current or trial member of staff!', ephemeral: true });
 				}
 				catch (e) {
-					return await interaction.reply({ content: `Could not send message: ${e}`, ephemeral: true });
+					return await interaction.reply({ content: `Could not send message: ${e}\n`, ephemeral: true });
 				}
 			}
 		}
@@ -134,7 +143,7 @@ module.exports = {
 		if (word.toLowerCase() === guildSettings.guildHandbookVerificationWord) {
 			try {
 				c.send({ embeds: [reVerificationEmbed] });
-
+				if (debug) console.error(`[${botName}] ${interaction.user.tag} passed re-verification in ${interaction.guild.name}`);
 				return await interaction.reply({ content: 'Thank you for reading the handbook!', ephemeral: true });
 			}
 			catch (e) {
@@ -144,6 +153,7 @@ module.exports = {
 		else if (word.toLowerCase() === 'help') {
 			try {
 				c.send({ embeds: [helpNeededEmbed] });
+				if (debug) console.error(`[${botName}] ${interaction.user.tag} requested help in ${interaction.guild.name}`);
 				return await interaction.reply({ content: 'Your request for help has been recieved!', ephemeral: true });
 			}
 			catch (e) {
@@ -153,9 +163,11 @@ module.exports = {
 		else {
 			try {
 				c.send({ embeds: [failedVerificationEmbed] });
+				if (debug) console.error(`[${botName}] ${interaction.user.tag} failed verification in ${interaction.guild.name} with word ${word}`);
 				return await interaction.reply({ content: `${word} is not the correct secret word!`, ephemeral: true });
 			}
 			catch (e) {
+				console.error(`[${botName}] Failed to send verification message in ${interaction.guild.name}`);
 				return await interaction.reply({ content: `Could not send verification message: ${e}`, ephemeral: true });
 			}
 		}

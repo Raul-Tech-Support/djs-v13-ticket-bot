@@ -24,6 +24,10 @@ module.exports = async (guild) => {
 				guildModLogChannel: '',
 				guildAdminLogChannel: '',
 				guildHandbookVerificationWord: 'word',
+				guildHandbookTrialRoleName: 'Trial Staff',
+				guildHandbookAllStaffRoleName: 'Discord Staff',
+				guildHandbookAwardRoleName: 'Helper',
+				guildHandbookSuspendedRoleName: 'Suspended',
 			});
 
 			await guildSetup.save();

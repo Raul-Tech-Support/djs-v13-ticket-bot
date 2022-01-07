@@ -17,7 +17,7 @@ module.exports = {
 		const permission = 'ADMINISTRATOR';
 
 		const colour = Math.floor(Math.random() * 16777215).toString(16);
-		const target = interaction.options.getMember('target');
+		const target = interaction.options.getUser('target');
 		const message = interaction.options.getString('message');
 
 		//Ensure interaction member has permission to execute the command.
@@ -62,14 +62,14 @@ module.exports = {
 
 		try {
 			await target.send({ content: message, components: [sentFromButton, supportButton] });
-			if (debug) console.error(`[${botName}] Sent DM from ${interaction.guild.name} with message: ${message}`);
+			if (debug) console.log(`[${botName}] Sent DM from ${interaction.guild.name} with message: ${message}`);
 
 			try {
 				const sentDm = new SentDmLog({
 					guildID: interaction.guildId,
 					guildName: interaction.guild.name,
 					targetID: target.id,
-					targetTag: target.user.tag,
+					targetTag: target.tag,
 					senderID: interaction.user.id,
 					senderTag: interaction.user.tag,
 					dmMessage: message,

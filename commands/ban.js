@@ -20,7 +20,21 @@ module.exports = {
 		.addStringOption(option => option.setName('silent').setDescription('Whether this ban should be silent!')
 			.addChoice('True', 'true'))
 		.addStringOption(option => option.setName('days').setDescription('The number of days to delete!')
-			.addChoice('True', 'true')),
+			.addChoice('0', '0')
+			.addChoice('1', '1')
+			.addChoice('2', '2')
+			.addChoice('3', '3')
+			.addChoice('4', '4')
+			.addChoice('5', '5')
+			.addChoice('6', '6')
+			.addChoice('7', '7')
+			.addChoice('8', '8')
+			.addChoice('9', '9')
+			.addChoice('10', '10')
+			.addChoice('11', '11')
+			.addChoice('12', '12')
+			.addChoice('13', '13')
+			.addChoice('14', '14')),
 	async execute(interaction, client) {
 
 		const permission = 'BAN_MEMBERS';
