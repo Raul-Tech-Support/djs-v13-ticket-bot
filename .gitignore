@@ -1,0 +1,6 @@
+node_modules
+.env
+.eslintrc.json
+\.vs
+TODO
+reopenTicket.js

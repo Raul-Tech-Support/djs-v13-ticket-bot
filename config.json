@@ -1,0 +1,10 @@
+{
+	"debug": false,
+	"botName": "Raul Tickets",
+	"version": "1.0.0",
+	"author": "RaulTechSupport#1148",
+	"supportURL": "https://discord.gg/qgPDUyrun8",
+	"logsURL": "https://raultechsupport.uk",
+	"internalLogChannel": "927496248737558570",
+	"inviteBotLink": "https://discord.com/api/oauth2/authorize?client_id=835960478919819290&permissions=8&scope=bot%20applications.commands"
+}

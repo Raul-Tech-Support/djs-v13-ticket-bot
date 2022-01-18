@@ -1,0 +1,25 @@
+{
+	"red": "#eb1e1e",
+	"orange": "#eb881e",
+	"yellow": "#e8eb1e",
+	"light-green": "#6deb1e",
+	"green": "#287350",
+	"turquoise": "#24cdd6",
+	"blue": "#2424d6",
+	"purple": "#9b24d6",
+	"pink": "#ed82cf",
+	"hot-pink": "#e324ae",
+	"options": [
+	  	"#eb1e1e",
+	  	"#eb881e",
+	  	"#e8eb1e",
+	  	"#6deb1e",
+	  	"#287350",
+	  	"#287350",
+	  	"#24cdd6",
+	  	"#2424d6",
+	  	"#9b24d6",
+	  	"#ed82cf",
+	  	"#e324ae"
+	]
+}
