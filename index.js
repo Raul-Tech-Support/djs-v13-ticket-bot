@@ -1,23 +1,45 @@
-const { options } = require('./assets/colours.json');
 const { Client, Collection } = require('discord.js');
-const { Routes } = require('discord-api-types/v9');
-const { readdirSync, readdir } = require('fs');
 const { REST } = require('@discordjs/rest');
+const { Routes } = require('discord-api-types/v9');
 const { botName, debug } = require('./config.json');
+const { sendError } = require ('./sendError');
+const { readdirSync, readdir } = require('fs');
 require('dotenv').config();
 
 const client = new Client({
 	intents: [
 		'GUILDS',
+		'GUILD_MEMBERS',
+		'GUILD_BANS',
+		'GUILD_EMOJIS_AND_STICKERS',
 		'GUILD_MESSAGES',
+		'DIRECT_MESSAGES',
+	],
+	partials: [
+		'CHANNEL',
 	],
 });
 
 client.commands = new Collection();
 client.buttons = new Collection();
-client.colours = options;
 client.token = process.env.TOKEN;
 const cmds = [];
+
+const getDirectories = readdirSync('./commands/', { withFileTypes: true })
+	.filter(dirent => dirent.isDirectory())
+	.map(dirent => dirent.name);
+
+for (const directory of getDirectories) {
+	const commandFiles = readdirSync(`./commands/${directory}/`).filter(f => f.endsWith('.js'));
+
+	for (const file of commandFiles) {
+		const command = require(`./commands/${directory}/${file}`);
+
+		client.commands.set(command.data.name, command);
+	}
+}
+
+
 
 const commandFiles = readdirSync('./commands/').filter(f => f.endsWith('.js'));
 
@@ -77,5 +99,33 @@ readdir('./events/', (err, files) => {
 		client.on(eventName, event.bind(null, client));
 	});
 });
+
+
+//ANIT CRASH MEASURES
+process.on('unhandledRejection', (reason, p) => {
+	console.error('[ANTICRASH] Unhandled Rejection/Catch - WARNING THIS IS NOT A SUITABLE ALTERNATIVE TO PROPER ERROR HANDLING. PLEASE RESTART THE BOT AS SOON AS POSSIBLE AND FIX THE ERROR.');
+	console.error(reason, p);
+
+	sendError(client, reason.toString());
+});
+process.on('uncaughtException', (err, origin) => {
+	console.error('[ANTICRASH] Uncaught Exception/Catch - WARNING THIS IS NOT A SUITABLE ALTERNATIVE TO PROPER ERROR HANDLING. PLEASE RESTART THE BOT AS SOON AS POSSIBLE AND FIX THE ERROR.');
+	console.error(err, origin);
+
+	sendError(client, err.toString());
+});
+process.on('uncaughtExceptionMonitor', (err, origin) => {
+	console.error('[ANTICRASH] Uncaught Exception/Catch (MONITOR) - WARNING THIS IS NOT A SUITABLE ALTERNATIVE TO PROPER ERROR HANDLING. PLEASE RESTART THE BOT AS SOON AS POSSIBLE AND FIX THE ERROR.');
+	console.error(err, origin);
+
+	sendError(client, err.toString());
+});
+process.on('multipleResolves', (type, promise, reason) => {
+	console.error('[ANTICRASH] Multiple Resolves - WARNING THIS IS NOT A SUITABLE ALTERNATIVE TO PROPER ERROR HANDLING. PLEASE RESTART THE BOT AS SOON AS POSSIBLE AND FIX THE ERROR.');
+	console.error(type, promise, reason);
+
+	sendError(client, reason.toString());
+});
+//END ANTI CRASH
 
 client.login(process.env.TOKEN);

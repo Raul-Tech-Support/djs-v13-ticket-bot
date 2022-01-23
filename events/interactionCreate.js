@@ -21,7 +21,8 @@ module.exports = async (client, interaction) => {
 
 	if (interaction.isButton()) {
 		const button = client.buttons.get(interaction.customId);
-		if (!button) return await interaction.reply({ embeds: [buttonNotFoundEmbed], components: [reportButton] });
+
+		if (!button) return await interaction.reply({ embeds: [buttonNotFoundEmbed], components: [reportButton], ephemeral: true });
 
 		try {
 			await button.execute(interaction, client);
@@ -30,7 +31,6 @@ module.exports = async (client, interaction) => {
 			console.error(`[${botName}] There was an error when trying to execute the button: ${interaction.customId}\n${error}`);
 			await interaction.reply({ content: 'There was an error whie executing this button: ' + error, ephemeral: true, components: [reportButton] });
 		}
-
 	}
 
 	if (!interaction.isCommand() || !client.commands.has(commandName)) return;
@@ -48,6 +48,11 @@ module.exports = async (client, interaction) => {
 		);
 
 		console.error(`[${botName}] There was an error when trying to execute the command: ${commandName}\n${error}`);
-		await interaction.reply({ content: `There was an error whie executing this command: ${error}\nDo you need to generate a config via \`/generateconfig\` or the button below?`, ephemeral: true, components: [reportButton] });
+		try {
+			await interaction.reply({ content: `There was an error whie executing this command: ${error}\nDo you need to generate a config via \`/generateconfig\` or the button below?`, ephemeral: true, components: [reportButton] });
+		}
+		catch {
+			await interaction.editReply({ content: `There was an error whie executing this command: ${error}\nDo you need to generate a config via \`/generateconfig\` or the button below?`, ephemeral: true, components: [reportButton] });
+		}
 	}
 };

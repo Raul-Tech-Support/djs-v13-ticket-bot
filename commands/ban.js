@@ -87,11 +87,25 @@ module.exports = {
 			.setTitle('Insufficient Permissions!')
 			.setDescription(`You do not have permission to execute this command!\nIt requires the \`${permission}\` permission.`)
 			.setFooter({ text:`${botName} | Version ${version} | Developed by ${author}` });
+		const targetedBotEmbed = new MessageEmbed()
+			.setColor('RED')
+			.setTitle('Woah There!')
+			.setDescription(':cry: I can\'t ban myself! Even if Discord allowed me to that wouldn\'t be very nice.')
+			.setFooter({ text:`${botName} | Version ${version} | Developed by ${author}` });
+		const targetedSelfEmbed = new MessageEmbed()
+			.setColor('RED')
+			.setTitle('Woah There!')
+			.setDescription('You can\'t ban yourself!')
+			.setFooter({ text:`${botName} | Version ${version} | Developed by ${author}` });
 
 		//Ensure interaction member has permission to ban members.
 		if (!interaction.member.permissions.has(permission)) return await interaction.reply({ embeds: [insufficientPermsEmbed], ephemeral: true });
 
 		if (!interaction.inGuild) return await interaction.reply({ content: 'This command cannot be executed inside DM\'s!', components: [supportButton] });
+
+		if (target.id === client.user.id) return await interaction.reply({ embeds: [targetedBotEmbed], ephemeral: true, components: [supportButton] }); //If bot is targeted
+
+		if (target.id === interaction.user.id) return await interaction.reply({ embeds: [targetedSelfEmbed], ephemeral: true, components: [supportButton] }); //If user targets self
 
 		//If bot's role is same as or below target
 		if (!target.moderatable) return await interaction.reply({ embeds: [botLacksPermsEmbed], ephemeral: true, components: [supportButton] });

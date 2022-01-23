@@ -1,17 +1,14 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { MessageEmbed, MessageActionRow, MessageButton } = require('discord.js');
 const { botName, version, author, supportURL } = require('../config.json');
-const sd = require('simple-duration-converter');
 
 module.exports = {
 	data: new SlashCommandBuilder()
-		.setName('timeout')
+		.setName('untimeout')
 		.setDescription('Time someone out!')
-		.addUserOption(option => option.setName('target').setDescription('The user to timeout!')
+		.addUserOption(option => option.setName('target').setDescription('The user whos timeout to remove!')
 			.setRequired(true))
-		.addStringOption(option => option.setName('time').setDescription('Time in seconds to timeout!')
-			.setRequired(true))
-		.addStringOption(option => option.setName('reason').setDescription('The reason for the timeout!')
+		.addStringOption(option => option.setName('reason').setDescription('The reason for removing the timeout!')
 			.setRequired(true)),
 	async execute(interaction, client) {
 
@@ -19,9 +16,9 @@ module.exports = {
 
 		const colour = Math.floor(Math.random() * 16777215).toString(16);
 		const target = interaction.options.getMember('target');
-		const timeStr = interaction.options.getString('time');
 		const reason = interaction.options.getString('reason');
-		let time;
+
+		if (!interaction.inGuild) return await interaction.reply({ content: 'This command cannot be executed inside DM\'s!', components: [supportButton] });
 
 		//Support button
 		const supportButton = new MessageActionRow()
@@ -45,17 +42,12 @@ module.exports = {
 		const targetedBotEmbed = new MessageEmbed()
 			.setColor('RED')
 			.setTitle('Woah There!')
-			.setDescription(':cry: I can\'t time myself out! Even if Discord allowed me to that wouldn\'t be very nice.')
+			.setDescription('I can\'t moderate myself!')
 			.setFooter({ text:`${botName} | Version ${version} | Developed by ${author}` });
 		const targetedSelfEmbed = new MessageEmbed()
 			.setColor('RED')
 			.setTitle('Woah There!')
-			.setDescription('You can\'t time yourself out!')
-			.setFooter({ text:`${botName} | Version ${version} | Developed by ${author}` });
-		const invalidTimeFormatEmbed = new MessageEmbed()
-			.setColor('RED')
-			.setTitle('Error!')
-			.setDescription('**This is not a valid time format!**\nTo see valid time formats click the button below.')
+			.setDescription('You can\'t remove your own timeout!')
 			.setFooter({ text:`${botName} | Version ${version} | Developed by ${author}` });
 		const genericError = new MessageEmbed()
 			.setColor('RED')
@@ -64,43 +56,24 @@ module.exports = {
 			.setFooter({ text:`${botName} | Version ${version} | Developed by ${author}` });
 		const timedOutEmbed = new MessageEmbed()
 			.setColor(colour)
-			.setTitle('Timed Out!')
-			.setDescription(`${target} has been successfully timed out!`)
+			.setTitle('Timeout Removed!')
+			.setDescription(`${target}'s timeout has been removed!`)
 			.setFooter({ text:`${botName} | Version ${version} | Developed by ${author}` });
 
 
 		//Ensure interaction member has permission to execute the command.
 		if (!interaction.member.permissions.has(permission)) return await interaction.reply({ embeds: [insufficientPermsEmbed], ephemeral: true });
 
-		if (!interaction.inGuild) return await interaction.reply({ content: 'This command cannot be executed inside DM\'s!', components: [supportButton] });
-
 		if (target.id === client.user.id) return await interaction.reply({ embeds: [targetedBotEmbed], ephemeral: true, components: [supportButton] }); //If bot is targeted
-
 		if (target.id === interaction.user.id) return await interaction.reply({ embeds: [targetedSelfEmbed], ephemeral: true, components: [supportButton] }); //If user targets self
-
 		if (!target.moderatable) return await interaction.reply({ embeds: [botLacksPermsEmbed], ephemeral: true, components: [supportButton] }); //If bot's role is same as or below target
 
-		//Converts entered time to miliseconds
 		try {
-			time = sd.parse(timeStr);
-			time = time * 1000;
-		}
-		catch {
-			//Adds timeOptionHelpButton to supportButton row
-			supportButton.addComponents(
-				new MessageButton()
-					.setCustomId('timeOptionHelpButton')
-					.setLabel('View more information!')
-					.setStyle('PRIMARY'));
-			return await interaction.reply({ embeds: [invalidTimeFormatEmbed], ephemeral: true, components: [supportButton] });
-		}
-
-		try {
-			await target.timeout(time, reason);
+			await target.timeout(null, reason);
 			return await interaction.reply({ embeds: [timedOutEmbed], ephemeral: true }); //If successfully timed out target
 		}
 		catch (e) {
-			return await interaction.reply({ content: `Could not time out user: ${e}`, embeds: [genericError], ephemeral: true, components: [supportButton] }); //Sends error message if fails to time out target
+			return await interaction.reply({ content: `Could not remove timeout from user: ${e}`, embeds: [genericError], ephemeral: true, components: [supportButton] }); //Sends error message if fails to time out target
 		}
 
 	},

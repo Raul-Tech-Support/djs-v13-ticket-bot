@@ -1,8 +1,9 @@
 {
 	"debug": false,
 	"botName": "Boop Bot",
-	"version": "2.1.8",
+	"version": "2.2.0",
 	"author": "RaulTechSupport#1148",
+	"authorID": "369055803677605889",
 	"supportURL": "https://discord.gg/qgPDUyrun8",
 	"logsURL": "https://dashboard.heroku.com/apps/rauls-boop-bot/logs",
 	"internalLogChannel": "903497554535260192",

@@ -96,4 +96,5 @@ module.exports = async (client) => {
 		console.error(`[${botName}] Failed to send a boot message: ${error}`);
 	}
 
+
 };
