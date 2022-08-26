@@ -15,7 +15,7 @@
     "discord.js": "^13.5.1",
     "djs-tickets": "^5.1.2",
     "dotenv": "^10.0.0",
-    "mongoose": "^6.1.5",
+    "mongoose": "^6.4.6",
     "rauls-discord-tickets": "^1.1.0"
   },
   "devDependencies": {
